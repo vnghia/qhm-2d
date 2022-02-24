@@ -3,30 +3,43 @@
 
 #include <vector>
 
+#include "coord.h"
 #include "point.h"
 
 class Space {
  public:
-  Space(float xll = 0, float xul = 2, float yll = 0, float yul = 2);
+  Space(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
+  Space(float xmin, float xmax, float ymin, float ymax);
+  Space();
 
-  void AddPoint(const Point& p, float xv, float yv);
+  void AddPoint(const Point& p = Point(), const Coord& v = Coord());
+  void AddPoint(float x, float y, float z, float r, float m, float vx, float vy,
+                float vz);
+
   void Update(float dt);
 
-  std::vector<Point> points;
+  const Point& operator[](std::size_t i) const;
+  const std::size_t Size() const;
 
  private:
-  bool IsCollideXLower(int index);
-  bool IsCollideXUpper(int index);
-  bool IsCollideYLower(int index);
-  bool IsCollideYUpper(int index);
+  void VCollideX(std::size_t i);
+  void VCollideY(std::size_t i);
+  void VCollideZ(std::size_t i);
 
-  float xll_ = 0;
-  float xul_ = 2;
-  float yll_ = 0;
-  float yul_ = 2;
+  void VCollide(std::size_t i, std::size_t j);
 
-  std::vector<float> xvs_;
-  std::vector<float> yvs_;
+  float xmin_;
+  float xmax_;
+  float ymin_;
+  float ymax_;
+  float zmin_;
+  float zmax_;
+
+  std::vector<Point> ps_;
+  std::vector<Coord> vs_;
+#ifdef QHM_ONE_COLLISION
+  std::vector<std::vector<bool>> col_;
+#endif
 };
 
 #endif
